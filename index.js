@@ -43,4 +43,7 @@ app.post('/zoom/webhook', async (req, res) => {
 });
 
 // サーバー起動
+app.get('/', (req, res) => {
+  res.send('Zoom Webhook サーバー稼働中！');
+});
 app.listen(3000, () => console.log('Webhook server running on port 3000'));
