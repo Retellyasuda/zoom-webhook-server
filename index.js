@@ -11,15 +11,13 @@ const FM_TOKEN = 'your_access_token';
 
 // Zoom Webhook受信
 app.post('/zoom/webhook', async (req, res) => {
-  // 🔐 Zoomの検証リクエストに対応（payloadの中をチェック！）
+  // 🔐 Zoomの検証リクエストに対応（encryptedTokenなし）
   if (req.body.event === 'endpoint.url_validation') {
     const plainToken = req.body.payload?.plainToken;
-    const encryptedToken = req.body.payload?.encryptedToken;
 
     console.log('🔐 Zoom検証リクエスト受信！');
     return res.json({
-      plainToken,
-      encryptedToken
+      plainToken
     });
   }
 
