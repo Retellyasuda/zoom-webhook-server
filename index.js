@@ -7,13 +7,21 @@ app.use(express.json());
 const FMSERVER = 'https://192.168.33.44';      // FileMaker Server URL
 const DBNAME = 'Retell_';
 const LAYOUT = 'BtoC';
-const FM_TOKEN = 'your_access_token';            // Data API トークン
+const FM_TOKEN = 'your_access_token';          // Data API トークン
 
 // Zoom Webhook受信
 app.post('/zoom/webhook', async (req, res) => {
+  // 🔐 Zoomの検証リクエストに対応
+  if (req.body.plainToken && req.body.encryptedToken) {
+    return res.json({
+      plainToken: req.body.plainToken,
+      encryptedToken: req.body.encryptedToken
+    });
+  }
+
   try {
     const caller = req.body.payload?.caller_number;
-    console.log('Zoom 着信番号:', caller);
+    console.log('📞 Zoom 着信番号:', caller);
 
     if (!caller) {
       return res.status(400).send('caller_number not found');
@@ -32,18 +40,19 @@ app.post('/zoom/webhook', async (req, res) => {
     });
 
     const data = await response.json();
-    console.log('FileMakerレスポンス:', data);
+    console.log('📥 FileMakerレスポンス:', data);
 
     res.status(200).send('ok');
 
   } catch (err) {
-    console.error(err);
+    console.error('❌ エラー:', err);
     res.status(500).send('error');
   }
 });
 
-// サーバー起動
+// サーバー起動確認用
 app.get('/', (req, res) => {
   res.send('Zoom Webhook サーバー稼働中！');
 });
-app.listen(3000, () => console.log('Webhook server running on port 3000'));
+
+app.listen(3000, () => console.log('🚀 Webhook server running on port 3000'));
