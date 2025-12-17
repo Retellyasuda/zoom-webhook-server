@@ -19,6 +19,9 @@ app.post('/zoom/webhook', async (req, res) => {
     });
   }
 
+  // 🔍 Zoomからのリクエスト全体をログ出力
+  console.log('🔍 受信データ:', JSON.stringify(req.body, null, 2));
+
   try {
     const caller = req.body.payload?.caller_number;
     console.log('📞 Zoom 着信番号:', caller);
@@ -44,15 +47,4 @@ app.post('/zoom/webhook', async (req, res) => {
 
     res.status(200).send('ok');
 
-  } catch (err) {
-    console.error('❌ エラー:', err);
-    res.status(500).send('error');
   }
-});
-
-// サーバー起動確認用
-app.get('/', (req, res) => {
-  res.send('Zoom Webhook サーバー稼働中！');
-});
-
-app.listen(3000, () => console.log('🚀 Webhook server running on port 3000'));
