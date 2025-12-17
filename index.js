@@ -11,15 +11,19 @@ const FM_TOKEN = 'your_access_token';
 
 // Zoom Webhook受信
 app.post('/zoom/webhook', async (req, res) => {
-  // Zoomの検証リクエストに対応
-  if (req.body.plainToken && req.body.encryptedToken) {
+  // 🔐 Zoomの検証リクエストに対応（payloadの中をチェック！）
+  if (req.body.event === 'endpoint.url_validation') {
+    const plainToken = req.body.payload?.plainToken;
+    const encryptedToken = req.body.payload?.encryptedToken;
+
+    console.log('🔐 Zoom検証リクエスト受信！');
     return res.json({
-      plainToken: req.body.plainToken,
-      encryptedToken: req.body.encryptedToken
+      plainToken,
+      encryptedToken
     });
   }
 
-  // Zoomからのリクエスト全体をログ出力
+  // 🔍 Zoomからのリクエスト全体をログ出力
   console.log('🔍 受信データ:', JSON.stringify(req.body, null, 2));
 
   try {
@@ -30,6 +34,7 @@ app.post('/zoom/webhook', async (req, res) => {
       return res.status(400).send('caller_number not found');
     }
 
+    // FileMaker Data API呼び出し
     const fmpUrl = `${FMSERVER}/fmi/data/v1/databases/${DBNAME}/layouts/${LAYOUT}/script/${encodeURIComponent('着信番号検索')}`;
 
     const response = await fetch(fmpUrl, {
